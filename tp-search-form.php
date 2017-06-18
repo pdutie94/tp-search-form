@@ -39,6 +39,9 @@ class tpsf_widget extends WP_Widget {
         $bgPosition = apply_filters( 'widget_bg_position', $instance['bg_position'] );
         $bgAttachment = apply_filters( 'widget_bg_attachment', $instance['bg_attachment'] );
         $bgSize = apply_filters( 'widget_bg_size', $instance['bg_size'] );
+        $btnLabel =  apply_filters( 'widget_btn_label', $instance['btn_label'] );
+        $btnBg =  apply_filters( 'widget_btn_bg', $instance['btn_bg'] );
+        $placeHolder =  apply_filters( 'placeholder', $instance['placeholder'] );
 
         $style = 'background-image: url('.$imgUrl.');';
 
@@ -95,7 +98,21 @@ class tpsf_widget extends WP_Widget {
             echo $args['before_title'] . $title . $args['after_title'];
 
         // This is where you run the code and display the output
-        echo get_search_form();
+        ?>
+        <form method="get" id="searchform" class="search-form" action="<?php echo site_url('/'); ?>" _lpchecked="1">
+            <fieldset>
+                <input name="s" id="s" value="" placeholder="<?php echo $placeHolder ?>" type="text">
+                <input type="hidden" name="post_type" value="post" /></form>
+                <?php if($placeHolder != '') : ?>
+                    <button id="search-image" class="sbutton" type="submit" value="">
+                <?php else : ?>
+                    <button id="search-image" class="sbutton" type="submit" value="" style="background-image: url(<?php echo $btnBg ?>)">
+                <?php endif; ?>
+                    <span><?php echo $btnLabel ?></span>
+                </button>
+            </fieldset>
+        </form>
+        <?php
 
         echo $args['after_widget'];
         echo "</div>";
@@ -129,21 +146,21 @@ class tpsf_widget extends WP_Widget {
             $bgReapeat = $instance[ 'bg_repeat' ];
         }
         else {
-            $bgReapeat = __( 'none', 'bg_repeat' );
+            $bgReapeat = __( 'none', 'tpsf_widget' );
         }
         //background position
         if ( isset( $instance[ 'bg_position' ] ) ) {
             $bgPosition = $instance[ 'bg_position' ];
         }
         else {
-            $bgPosition = __( 'none', 'bg_position' );
+            $bgPosition = __( 'none', 'tpsf_widget' );
         }
         //background attachment
         if ( isset( $instance[ 'bg_attachment' ] ) ) {
             $bgAttachment = $instance[ 'bg_attachment' ];
         }
         else {
-            $bgAttachment = __( 'none', 'bg_attachment' );
+            $bgAttachment = __( 'none', 'tpsf_widget' );
         }
         //background Size
         if ( isset( $instance[ 'bg_size' ] ) ) {
@@ -152,6 +169,28 @@ class tpsf_widget extends WP_Widget {
         else {
             $bgSize = __( 'none', 'bg_size' );
         }
+        //Button label
+        if ( isset( $instance[ 'btn_label' ] ) ) {
+            $label = $instance[ 'btn_label' ];
+        }
+        else {
+            $label = __( 'Search', 'tpsf_widget' );
+        }
+        //Button bg
+        if ( isset( $instance[ 'btn_bg' ] ) ) {
+            $btnBg = $instance[ 'btn_bg' ];
+        }
+        else {
+            $btnBg = __( '', 'tpsf_widget' );
+        }
+        //Placeholder text
+        if ( isset( $instance[ 'placeholder' ] ) ) {
+            $placeHolder = $instance[ 'placeholder' ];
+        }
+        else {
+            $placeHolder = __( '', 'tpsf_widget' );
+        }
+
         // Widget admin form
         ?>
         <p>
@@ -159,11 +198,23 @@ class tpsf_widget extends WP_Widget {
             <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
         </p>
         <p>
+            <label for="<?php echo $this->get_field_id( 'btn_label' ); ?>"><?php _e( 'Button Label:' ); ?></label> 
+            <input class="widefat" id="<?php echo $this->get_field_id( 'btn_label' ); ?>" name="<?php echo $this->get_field_name( 'btn_label' ); ?>" type="text" value="<?php echo esc_attr( $label ); ?>" />
+        </p>
+        <p>
+            <label for="<?php echo $this->get_field_id( 'btn_bg' ); ?>"><?php _e( 'Button Background Image URL:' ); ?></label> 
+            <input class="widefat" id="<?php echo $this->get_field_id( 'btn_bg' ); ?>" name="<?php echo $this->get_field_name( 'btn_bg' ); ?>" type="text" value="<?php echo esc_attr( $btnBg ); ?>" />
+        </p>
+        <p>
+            <label for="<?php echo $this->get_field_id( 'placeholder' ); ?>"><?php _e( 'Input Place Holder:' ); ?></label> 
+            <input class="widefat" id="<?php echo $this->get_field_id( 'placeholder' ); ?>" name="<?php echo $this->get_field_name( 'placeholder' ); ?>" type="text" value="<?php echo esc_attr( $placeHolder ); ?>" />
+        </p>
+        <p>
             <input class="checkbox" id="<?php echo $this->get_field_id( 'use_bg' ); ?>" name="<?php echo $this->get_field_name( 'use_bg' ); ?>" type="checkbox" value="1" <?php echo $checked ?>/>
             <label for="<?php echo $this->get_field_id( 'use_bg' ); ?>"><?php _e( 'Use background' ); ?></label> 
         </p>
         <p>
-            <label for="<?php echo $this->get_field_id( 'img_url' ); ?>"><?php _e( 'Image URL:' ); ?></label>
+            <label for="<?php echo $this->get_field_id( 'img_url' ); ?>"><?php _e( 'Background Image URL:' ); ?></label>
             <input class="widefat" id="<?php echo $this->get_field_id( 'img_url' ); ?>" name="<?php echo $this->get_field_name( 'img_url' ); ?>" type="text" value="<?php echo esc_attr( $imgUrl ); ?>"/>
         </p>
         <p>
@@ -215,6 +266,9 @@ class tpsf_widget extends WP_Widget {
         $instance['bg_position'] = ( ! empty( $new_instance['bg_position'] ) ) ? strip_tags( $new_instance['bg_position'] ) : '';
         $instance['bg_attachment'] = ( ! empty( $new_instance['bg_attachment'] ) ) ? strip_tags( $new_instance['bg_attachment'] ) : '';
         $instance['bg_size'] = ( ! empty( $new_instance['bg_size'] ) ) ? strip_tags( $new_instance['bg_size'] ) : '';
+        $instance['btn_label'] = ( ! empty( $new_instance['btn_label'] ) ) ? strip_tags( $new_instance['btn_label'] ) : '';
+        $instance['btn_bg'] = ( ! empty( $new_instance['btn_bg'] ) ) ? strip_tags( $new_instance['btn_bg'] ) : '';
+        $instance['placeholder'] = ( ! empty( $new_instance['placeholder'] ) ) ? strip_tags( $new_instance['placeholder'] ) : '';
         return $instance;
     }
 }

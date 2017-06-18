@@ -86,6 +86,7 @@ class tpsf_widget extends WP_Widget {
         } else {
             $style .= 'background-position: unset;';
         }
+        $mts_options = get_option(MTS_THEME_NAME);
 
         // before and after widget arguments are defined by themes
         echo $args['before_widget'];
@@ -99,9 +100,9 @@ class tpsf_widget extends WP_Widget {
 
         // This is where you run the code and display the output
         ?>
-        <form method="get" id="searchform" class="search-form" action="<?php echo site_url('/'); ?>" _lpchecked="1">
+        <form method="get" id="searchform" class="search-form" action="<?php echo esc_attr( home_url() ); ?>" _lpchecked="1">
             <fieldset>
-                <input name="s" id="s" value="" placeholder="<?php echo $placeHolder ?>" type="text">
+                <input type="text" name="s" id="s" value="<?php the_search_query(); ?>" placeholder="<?php _e($placeHolder, 'tpsf_widget' ); ?>" <?php if (!empty($mts_options['mts_ajax_search'])) echo ' autocomplete="off"'; ?> />
                 <input type="hidden" name="post_type" value="post" /></form>
                 <?php if($placeHolder != '') : ?>
                     <button id="search-image" class="sbutton" type="submit" value="">
